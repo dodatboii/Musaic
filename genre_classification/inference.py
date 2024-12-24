@@ -121,7 +121,8 @@ def main(audio_path):
     else:
         results = myPredictor.predict_batch(audio_path)
         for file_name, genre_probs in results.items():
-            genre_probs = myPredictor.predict_proba(audio_path)
+            file_path = os.path.join(audio_path, file_name)
+            genre_probs = myPredictor.predict_proba(file_path)
             print_prediction(file_name, genre_probs)
 
 

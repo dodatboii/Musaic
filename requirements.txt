@@ -1,0 +1,7 @@
+torch~=2.1.0+cu121
+librosa~=0.10.2.post1
+numpy~=1.23.1
+tqdm~=4.67.1
+scikit-learn~=1.6.0
+torchaudio~=2.1.0+cu121
+joblib~=1.4.2
