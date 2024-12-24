@@ -5,6 +5,7 @@ import numpy as np
 from pathlib import Path
 from model import MusicCNN
 import joblib
+import os
 
 
 class MusicGenrePredictor:
@@ -105,27 +106,24 @@ def print_prediction(file_name, genre_probs, top_k=3):
         print(f"{i}. {genre}: {prob:.1%}")
 
 
-def main():
+def main(audio_path):
     # Initialize the predictor
     myPredictor = MusicGenrePredictor(
         model_path='src/best_model.pt',
         label_encoder_path='src/label_encoder.joblib'
     )
 
-    # Single file prediction
-    audio_path = r"D:\Programs Installed\FL Studio 21\Projects\ssff\ssff.wav"
-    genre = myPredictor.predict(audio_path)
-    print(f"Predicted genre: {genre}")
+    if os.path.splitext(os.path.basename(audio_path))[1] in ['.wav', '.mp3']:
+        # Get probability distribution for all genres
+        genre_probs = myPredictor.predict_proba(audio_path)
+        print_prediction(audio_path, genre_probs)
 
-    # Get probability distribution for all genres
-    genre_probs = myPredictor.predict_proba(audio_path)
-    print_prediction(audio_path, genre_probs)
-
-    # # Batch prediction for a folder
-    # results = myPredictor.predict_batch("path/to/audio/folder")
-    # for file_name, genre_probs in results.items():
-    #     print_prediction(file_name, genre_probs)
+    else:
+        results = myPredictor.predict_batch(audio_path)
+        for file_name, genre_probs in results.items():
+            genre_probs = myPredictor.predict_proba(audio_path)
+            print_prediction(file_name, genre_probs)
 
 
 if __name__ == '__main__':
-    main()
+    main(audio_path = "../asset")
