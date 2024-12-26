@@ -16,7 +16,7 @@ def train(model, train_dl, valid_dl, num_epochs, device, patience=10):
     # Early stopping variables
     best_valid_loss = float('inf')
     counter = 0
-    best_model_path = 'src/best_model.pt'
+    best_model_path = 'genre_classification/src/best_model.pt'
 
     # To store metrics history
     train_losses = []
@@ -110,7 +110,7 @@ def train(model, train_dl, valid_dl, num_epochs, device, patience=10):
     print('Finished Training')
 
     # Save final model
-    final_model_path = 'src/final_model.pt'
+    final_model_path = 'genre_classification/src/final_model.pt'
 
     # Save final model
     torch.save({
@@ -133,11 +133,11 @@ def train(model, train_dl, valid_dl, num_epochs, device, patience=10):
 
 def main():
     # Define the path to the GTZAN dataset
-    gtzan_path = 'dataset/genres_original'  # Modify this with your dataset path
+    gtzan_path = 'genre_classification/dataset/genres_original'  # Modify this with your dataset path
 
     # Initialize dataset
     myds = MusicDataset(gtzan_path)
-    label_encoder_path = 'src/label_encoder.joblib'
+    label_encoder_path = 'genre_classification/src/label_encoder.joblib'
 
     # Save label encoder
     joblib.dump(myds.label_encoder, label_encoder_path)

@@ -3,7 +3,7 @@ import librosa
 import librosa.feature as lf
 import numpy as np
 from pathlib import Path
-from model import MusicCNN
+from .model import MusicCNN
 import joblib
 import os
 
@@ -26,10 +26,7 @@ class MusicGenrePredictor:
 
     def preprocess_audio(self, audio_path):
         """Preprocess a single audio file."""
-        # Load and preprocess audio
         audio, sr = librosa.load(audio_path, sr=self.sample_rate)
-
-        # Extract MFCC features
         mfcc = lf.mfcc(y=audio, sr=sr, n_mfcc=self.n_mfcc)
 
         # Handle padding/trimming
@@ -45,19 +42,15 @@ class MusicGenrePredictor:
 
     def predict_proba(self, audio_path):
         """Predict probability distribution over genres."""
-        # Preprocess audio
         mfcc_tensor = self.preprocess_audio(audio_path)
         mfcc_tensor = mfcc_tensor.to(self.device)
 
-        # Get model predictions
         with torch.no_grad():
             output = self.model(mfcc_tensor)
             probabilities = torch.exp(output)  # Convert log_softmax to probabilities
 
-        # Convert to numpy array
         probabilities = probabilities.cpu().numpy()[0]
 
-        # Create dictionary of genre probabilities
         genre_probs = {
             genre: float(prob)
             for genre, prob in zip(self.label_encoder.classes_, probabilities)
@@ -80,12 +73,10 @@ class MusicGenrePredictor:
         results = {}
         audio_folder = Path(audio_folder)
 
-        # Find all audio files
         audio_files = []
         for ext in extensions:
             audio_files.extend(audio_folder.glob(f'*{ext}'))
 
-        # Process each file
         for audio_file in audio_files:
             try:
                 genre_probs = self.predict_proba(str(audio_file))
@@ -97,34 +88,35 @@ class MusicGenrePredictor:
         return results
 
 
-def print_prediction(file_name, genre_probs, top_k=3):
+def print_prediction(genre_probs, top_k=3):
     """Helper function to print prediction results nicely."""
-    print(f"\nPredictions for: {file_name}")
-    print("-" * 50)
     print("Top {} genres:".format(top_k))
     for i, (genre, prob) in enumerate(list(genre_probs.items())[:top_k], 1):
         print(f"{i}. {genre}: {prob:.1%}")
 
 
-def main(audio_path):
-    # Initialize the predictor
+def classify(audio_path):
     myPredictor = MusicGenrePredictor(
-        model_path='src/best_model.pt',
-        label_encoder_path='src/label_encoder.joblib'
+        model_path='genre_classification/src/best_model.pt',
+        label_encoder_path='genre_classification/src/label_encoder.joblib'
     )
 
-    if os.path.splitext(os.path.basename(audio_path))[1] in ['.wav', '.mp3']:
-        # Get probability distribution for all genres
-        genre_probs = myPredictor.predict_proba(audio_path)
-        print_prediction(audio_path, genre_probs)
-
-    else:
+    if os.path.isdir(audio_path):
         results = myPredictor.predict_batch(audio_path)
         for file_name, genre_probs in results.items():
             file_path = os.path.join(audio_path, file_name)
             genre_probs = myPredictor.predict_proba(file_path)
-            print_prediction(file_name, genre_probs)
+            print_prediction(genre_probs)
+
+    elif os.path.isfile(audio_path):
+        if not (audio_path.endswith('.wav') or audio_path.endswith('.mp3')):
+            raise ValueError(f"The file {audio_path} is neither a .wav nor a .mp3 file.")
+        genre_probs = myPredictor.predict_proba(audio_path)
+        print_prediction(genre_probs)
+
+    else:
+        raise ValueError(f"The path {audio_path} is neither a valid directory nor a valid file.")
 
 
 if __name__ == '__main__':
-    main(audio_path = "../asset")
+    classify(audio_path ="../asset")
