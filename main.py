@@ -1,13 +1,24 @@
 import os
 from pathlib import Path
-from glob import glob
-from tqdm import tqdm
+
 from genre_classification.inference import MusicGenrePredictor
-from bpm_detection.detect import detect_bpm_single
+from bpm_detection.bpm_detect import detect_bpm_single
+from chord_detection.chord_detect import run_chord_detect
+
+def pipeline(file_name):
+    print(f"Processing file: {os.path.basename(file_name)}")
+    bpm = detect_bpm_single(file_name)
+    print(f"BPM: {bpm}")
+    genre_probs = myPredictor.predict_proba(file_name)
+    print("\nTop 3 possible genres:")
+    for i, (genre, prob) in enumerate(list(genre_probs.items())[:3], 1):
+        print(f"{i}. {genre}: {prob:.1%}")
+    print("\nChord flow:")
+    run_chord_detect(input_file=file_name, method="match_template", bpm=bpm)
 
 
 if __name__ == '__main__':
-    obj = "asset"
+    obj = "asset/002.mp3"
 
     print("----------START----------")
     myPredictor = MusicGenrePredictor(
@@ -24,13 +35,7 @@ if __name__ == '__main__':
         bpm_dict = {}
         for file in audio_files:
             try:
-                print(f"Processing file: {os.path.basename(file)}")
-                bpm = detect_bpm_single(file)
-                print(f"BPM: {bpm}")
-                genre_probs = myPredictor.predict_proba(file)
-                print("Top 3 genres:")
-                for i, (genre, prob) in enumerate(list(genre_probs.items())[:3], 1):
-                    print(f"{i}. {genre}: {prob:.1%}")
+                pipeline(file)
             except Exception as e:
                 print(f"Error processing {file}: {str(e)}")
                 continue
@@ -39,13 +44,7 @@ if __name__ == '__main__':
     elif os.path.isfile(obj):
         if not (obj.endswith('.wav') or obj.endswith('.mp3')):
             raise ValueError(f"The file {obj} is neither a .wav nor a .mp3 file.")
-        print(f"Processing file: {os.path.basename(obj)}")
-        bpm = detect_bpm_single(obj)
-        print(f"BPM: {bpm}")
-        genre_probs = myPredictor.predict_proba(obj)
-        print("Top 3 genres:")
-        for i, (genre, prob) in enumerate(list(genre_probs.items())[:3], 1):
-            print(f"{i}. {genre}: {prob:.1%}")
+        pipeline(obj)
 
     else:
         raise ValueError(f"The path {obj} is neither a valid directory nor a valid file.")
