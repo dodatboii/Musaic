@@ -12,8 +12,8 @@ def detect_bpm_single(file_name):
     samples, fs = librosa.load(file_name, sr=None, mono=True)
     bpm_array = librosa.beat.tempo(y=samples, sr=fs)
     bpm_v = bpm_array.tolist()[0]
-    if bpm_v < 100:
-        bpm_v = bpm_v * 2
+    # if bpm_v < 100:
+    #     bpm_v = bpm_v * 2
 
     return ceil(bpm_v)
 

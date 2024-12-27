@@ -199,11 +199,10 @@ def run_chord_detect(input_file, method="match_template", bpm = 100):
     config = ChordDetectionConfig(
         fs=44100,
         bpm=bpm,
-        beats_per_chord=8
+        beats_per_chord=16
     )
 
     detector = ChordDetector(config, templates, chords, nested_cof)
-
     if method == "match_template":
         timestamps, final_chords = detector.detect_chords(
             audio_signal,
@@ -215,10 +214,10 @@ def run_chord_detect(input_file, method="match_template", bpm = 100):
             ChordDetectionMethod.HMM
         )
 
-    print("->".join(final_chords[:8]))
-    # print("Time (s)", "Chord")
-    # for n in range(len(timestamp)):
-    #     print("%.3f" % timestamp[n], final_chords[n])
+    # print("->".join(final_chords))
+    print("Time (s)", "Chord")
+    for n in range(len(timestamps)):
+        print("%.3f" % timestamps[n], final_chords[n])
 
 
 if __name__ == "__main__":

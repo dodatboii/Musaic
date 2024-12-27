@@ -18,7 +18,7 @@ def pipeline(file_name):
 
 
 if __name__ == '__main__':
-    obj = "asset/002.mp3"
+    obj = "asset"
 
     print("----------START----------")
     myPredictor = MusicGenrePredictor(
