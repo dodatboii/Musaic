@@ -3,8 +3,6 @@
 @author ORCHISAMA DAS, 2016"""
 
 from __future__ import division
-from chromagram import compute_chroma
-import os
 import numpy as np
 
 

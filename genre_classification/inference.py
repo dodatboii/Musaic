@@ -3,7 +3,7 @@ import librosa
 import librosa.feature as lf
 import numpy as np
 from pathlib import Path
-from .model import MusicCNN
+from genre_classification.model import MusicCNN
 import joblib
 import os
 
