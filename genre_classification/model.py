@@ -38,40 +38,28 @@ class MusicCNN(nn.Module):
             nn.MaxPool2d(kernel_size=(1, 4))
         )
 
-        # Calculate the size of flattened features
         # Original: (1, 13, 1289)
         # After pooling layers: (256, 3, 5)
         self.flat_features = 256 * 3 * 5
 
-        # Fully Connected Layers
+        # Fc
         self.fc1 = nn.Linear(self.flat_features, 512)
         self.fc2 = nn.Linear(512, 128)
         self.fc3 = nn.Linear(128, num_genres)
 
-        # Dropout for regularization
+        # Dropout
         self.dropout = nn.Dropout(0.5)
 
     def forward(self, x):
-        # Add debug prints to track tensor shapes
-        # print("Input shape:", x.shape)
-
         x = self.conv1(x)
-        # print("After conv1:", x.shape)
-
         x = self.conv2(x)
-        # print("After conv2:", x.shape)
-
         x = self.conv3(x)
-        # print("After conv3:", x.shape)
-
         x = self.conv4(x)
-        # print("After conv4:", x.shape)
 
         # Flatten
         x = x.view(-1, self.flat_features)
-        # print("After flatten:", x.shape)
 
-        # Fully connected layers with dropout
+        # Fc
         x = F.relu(self.fc1(x))
         x = self.dropout(x)
         x = F.relu(self.fc2(x))

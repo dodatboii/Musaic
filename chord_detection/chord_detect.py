@@ -164,16 +164,6 @@ class ChordDetector:
         ]
 
     def detect_chords(self, x: np.ndarray, method: ChordDetectionMethod) -> Tuple[np.ndarray, List[str]]:
-        """
-        Detect chords in audio signal using specified method
-
-        Args:
-            x: Input audio signal
-            method: ChordDetectionMethod enum specifying detection method
-
-        Returns:
-            Tuple of (timestamps, detected chords)
-        """
         if len(x.shape) > 1:
             raise ValueError("Input signal must be mono (1D)")
 
