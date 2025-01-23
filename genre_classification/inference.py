@@ -25,11 +25,10 @@ class MusicGenrePredictor:
         self.target_frames = 1289
 
     def preprocess_audio(self, audio_path):
-        """Preprocess a single audio file."""
         audio, sr = librosa.load(audio_path, sr=self.sample_rate)
         mfcc = lf.mfcc(y=audio, sr=sr, n_mfcc=self.n_mfcc)
 
-        # Handle padding/trimming
+        # Handle padding
         if mfcc.shape[1] < self.target_frames:
             padding = self.target_frames - mfcc.shape[1]
             mfcc = np.pad(mfcc, ((0, 0), (0, padding)), mode='constant')
@@ -41,7 +40,6 @@ class MusicGenrePredictor:
         return mfcc_tensor
 
     def predict_proba(self, audio_path):
-        """Predict probability distribution over genres."""
         mfcc_tensor = self.preprocess_audio(audio_path)
         mfcc_tensor = mfcc_tensor.to(self.device)
 
@@ -61,13 +59,11 @@ class MusicGenrePredictor:
         return genre_probs
 
     def predict(self, audio_path):
-        """Predict single genre label."""
         genre_probs = self.predict_proba(audio_path)
         predicted_genre = max(genre_probs.items(), key=lambda x: x[1])[0]
         return predicted_genre
 
     def predict_batch(self, audio_folder, extensions=None):
-        """Predict genres for all audio files in a folder."""
         if extensions is None:
             extensions = ['.wav', '.mp3']
         results = {}
@@ -89,7 +85,6 @@ class MusicGenrePredictor:
 
 
 def print_prediction(genre_probs, top_k=3):
-    """Helper function to print prediction results nicely."""
     print("Top {} genres:".format(top_k))
     for i, (genre, prob) in enumerate(list(genre_probs.items())[:top_k], 1):
         print(f"{i}. {genre}: {prob:.1%}")
