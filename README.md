@@ -45,5 +45,3 @@ The chord recognition part referring to [orchidas/Chord-Recognition: Automatic c
 If you are interested in this project, any assistance will be appreciated.
 
 Email: steven_zhangyx0608@163.com
-
-WeChat: steven0233
